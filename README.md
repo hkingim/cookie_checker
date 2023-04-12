@@ -1,7 +1,7 @@
 # cookie_checker
 Cookie checker is a python script that checks and flags insecure cookies on target website(s).
 
-## Install libraries needed
+## Install libraries needed using pip
 
 ```bash
 pip install -r requirements.txt
