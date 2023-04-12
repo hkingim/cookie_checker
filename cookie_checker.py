@@ -1,4 +1,3 @@
-import re
 import requests
 import argparse
 from termcolor import colored
