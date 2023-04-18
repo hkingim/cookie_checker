@@ -35,6 +35,7 @@ def check_url(url, disable_ssl_verification):
 # Check cookies
 def check_cookie(url, disable_ssl_verification):
     try:
+        print(colored(f"\nChecking for cookies...", 'blue'))
         response = requests.get(url, verify=not disable_ssl_verification)
         cookies = response.cookies
         if cookies:
