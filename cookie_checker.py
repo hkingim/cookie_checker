@@ -13,9 +13,9 @@ import datetime
 def banner():
     print()
     print(colored(f"========================================================", 'blue'))
-    print(" > cookie_checker.py .................................. ")
+    print(colored(f" > cookie_checker.py .................................. ", 'cyan'))
     print(colored(f"--------------------------------------------------------", 'blue'))
-    print(" Simple tool to check for insecure cookies on a website ")
+    print(colored(f" Simple tool to check for insecure cookies on a website ", 'cyan'))
     print(colored(f"========================================================", 'blue'))
     print()
 
