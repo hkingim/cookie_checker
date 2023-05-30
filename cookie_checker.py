@@ -1,6 +1,5 @@
 import requests
 import argparse
-from termcolor import colored
 import datetime
 
 ###
@@ -9,14 +8,22 @@ import datetime
 #    Use -h or --help for more options.
 ###
 
+GRAY = '\033[0;97m'
+BLUE = '\033[94m'
+CYAN = '\033[96m'
+GREEN = '\033[92m'
+WARNING = '\033[0;93m'
+FAIL = '\033[0;91m'
+END = '\033[0;0m'
+
 # Display banner
 def banner():
     print()
-    print(colored(f"========================================================", 'blue'))
-    print(colored(f" > cookie_checker.py .................................. ", 'cyan'))
-    print(colored(f"--------------------------------------------------------", 'blue'))
-    print(colored(f" Simple tool to check for insecure cookies on a website ", 'cyan'))
-    print(colored(f"========================================================", 'blue'))
+    print(f"{BLUE}========================================================{END}")
+    print(f"{CYAN} > cookie_checker.py .................................. {END}")
+    print(f"{BLUE}--------------------------------------------------------{END}")
+    print(f"{CYAN} Simple tool to check for insecure cookies on a website {END}")
+    print(f"{BLUE}========================================================{END}")
     print()
 
 # Check url or targets
@@ -35,14 +42,11 @@ def check_url(url, disable_ssl_verification):
 # Check cookies
 def check_cookie(url, disable_ssl_verification):
     try:
-        print(colored(f"\nChecking for cookies...", 'blue'))
+        print(f"{CYAN}\nChecking for cookies...{END}")
         response = requests.get(url, verify=not disable_ssl_verification)
         cookies = response.cookies
         if cookies:
-            print(colored(f"\n[*] Cookies found in {url}:", 'blue'))
-            if url.startswith('http://'):
-                print()
-                print(colored(f"[!] Target is used under HTTP connection. It's highly recommended to ensure that cookies are transmitted only over HTTPS connections.", 'yellow'))
+            print(f"{GRAY}\nCookies found in {url}:{END}")
             for cookie in cookies:
                 # Check if there is an expiration date  
                 if cookie.expires is not None:    
@@ -53,56 +57,74 @@ def check_cookie(url, disable_ssl_verification):
                     current_date = datetime.datetime.now().date()
                     # Get the date part of the expiration datetime
                     expiration_date_only = expires_datetime.date()
+                    expiration_date_value = expires_str
                 else:
-                    expires_str = "None"
+                    expiration_date_value = "None"
                 if cookie.has_nonstandard_attr('HttpOnly') or cookie.has_nonstandard_attr('httponly'):
-                    httponly_value = True
+                    httponly_value = "True"
                 else:
-                    httponly_value = False
+                    httponly_value = "False"
                 if cookie.has_nonstandard_attr('SameSite') or cookie.has_nonstandard_attr('samesite'):
-                    samesite_value = True
+                    samesite_value = "True"
                 else:
-                    samesite_value = False
+                    samesite_value = "False"
+                if not cookie.secure:
+                    secure_value = "False"
+                else:
+                    secure_value = "True"
+                
 
                 # Print cookie info
-                print(colored(f"\n[*] {cookie.name}={cookie.value}; Expires={expires_str}; SameSite={samesite_value}; HttpOnly={httponly_value}; Secure={cookie.secure};", 'cyan'))
+                print(f"\n{GRAY}[*] {cookie.name}={cookie.value}; Expires={expiration_date_value}; Secure={secure_value}; SameSite={samesite_value}; HttpOnly={httponly_value}{END}")
 
                 # Check if cookie.expires > today
                 if cookie.expires is not None and expiration_date_only > current_date:
-                    print(colored(f"[!] Persistent cookie. (Expires: {expires_str})", 'yellow'))
+                    print(f"{WARNING}[!] Persistent cookie found.{END}")
+                else:
+                    print(f"{GREEN}[+] No persistent cookie found.{END}")
                 # Check secure attribute
                 if not cookie.secure:
-                    print(colored(f"[!] Missing Secure attribute.", 'yellow'))
+                    print(f"{WARNING}[!] Missing Secure attribute.{END}")
+                else:
+                    print(f"{GREEN}[+] Secure attribute found.{END}")
                 # Check httponly attribute
                 if not cookie.has_nonstandard_attr('HttpOnly') and not cookie.has_nonstandard_attr('httponly'):
-                    print(colored(f"[!] Missing HttpOnly attribute.", 'yellow'))
+                    print(f"{WARNING}[!] Missing HttpOnly attribute.{END}")
+                else:
+                    print(f"{GREEN}[+] HttpOnly attribute found.{END}")
                 # Check samesite attribute
                 if not cookie.has_nonstandard_attr('SameSite') and not cookie.has_nonstandard_attr('samesite'): 
-                    print(colored(f"[!] Missing SameSite attribute.", 'yellow'))                 
-                
+                    print(f"{WARNING}[!] Missing SameSite attribute.{END}")
+                else:
+                    print(f"{GREEN}[+] SameSite attribute found.{END}")                 
+            print()
+               
             # Collect insecure cookies found         
             insecure_cookies = [ cookie for cookie in cookies if not cookie.secure or not cookie.has_nonstandard_attr('HttpOnly') and not cookie.has_nonstandard_attr('httponly') or not cookie.has_nonstandard_attr('SameSite') and not cookie.has_nonstandard_attr('samesite') or cookie.expires is not None and expiration_date_only > current_date ] 
-            if insecure_cookies:
+            if insecure_cookies or url.startswith('http://'):
                 # Print if insecure cookies found
-                print(colored(f"\n\n[!] Insecure cookies found in {url}:", 'yellow'))
+                if url.startswith('http://'):
+                    print(f"{WARNING}[!] Target is under HTTP connection. It's highly recommended to ensure that cookies are transmitted over HTTPS connection.{END}")
+                print(f"{WARNING}[!] There are insecure cookies found in {url}{WARNING}.{END}")
             else:
-                # Print message if no insecure cookies found  
-                print(colored(f"\n\n[*] No insecure cookies found in {url}.", 'green'))
+                # Print message if no insecure cookies found 
+                print(f"{GREEN}[*] No insecure cookies found in {url}{GREEN}.{END}")
             
         else:
             # Print message if no cookies found
-            print(colored(f"\n[*] No cookies found in {url}.", 'blue'))
+            print(f"{GRAY}\n[*] No cookies found in {url}.{END}")
         print()
     except requests.exceptions.SSLError as e:
-        print(colored(f"\n[!] Error: SSL certificate verification failed. To ignore this error, use -d option to disable SSL certificate verification.", 'red'))
+        print(f"{FAIL}\n[!] Error: SSL certificate verification failed. To ignore this error, disable SSL certificate verification.{END}")
         return
     except requests.exceptions.RequestException as e:
 #       print(f"\nError: {e}")
-        print(colored(f"\n[!] Error: Can't reach {url}. Connection timed out.", 'red'))
+        print(f"{FAIL}\n[!] Error: Can't reach {url}{FAIL}. Connection timed out.{END}")
         return
     # Print link for reference
-    print(colored(f'\nReference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies', 'blue'))
-    print()
+    print(f'{GRAY}\nReference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies\n{END}')
+    
+    print(f"{GRAY}\nCompleted.\n\n{END}")
 
 if __name__ == "__main__":
     banner()
@@ -125,4 +147,4 @@ if __name__ == "__main__":
         else:
             check_url(args.url_target, args.disable_ssl_verification)
     except KeyboardInterrupt:
-        print(f"\nExiting...")
+        print(f"{FAIL}\nExiting...\n{END}")
