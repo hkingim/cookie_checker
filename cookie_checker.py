@@ -113,7 +113,8 @@ def check_cookie(url, disable_ssl_verification):
         else:
             # Print message if no cookies found
             print(f"{GRAY}\n[*] No cookies found in {url}.{END}")
-        print()
+        # Print link for reference
+        print(f'{GRAY}\nReference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies\n{END}')
     except requests.exceptions.SSLError as e:
         print(f"{FAIL}\n[!] Error: SSL certificate verification failed. To ignore this error, disable SSL certificate verification.{END}")
         return
@@ -121,9 +122,6 @@ def check_cookie(url, disable_ssl_verification):
 #       print(f"\nError: {e}")
         print(f"{FAIL}\n[!] Error: Can't reach {url}{FAIL}. Connection timed out.{END}")
         return
-    # Print link for reference
-    print(f'{GRAY}\nReference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies\n{END}')
-    
     print(f"{GRAY}\nCompleted.\n\n{END}")
 
 if __name__ == "__main__":
