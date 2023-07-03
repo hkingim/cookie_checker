@@ -14,7 +14,7 @@ python3 cookie_checker.py -u <target>
 
 ## Usage
 
-```bash
+```
 usage: cookie_checker.py [-h] (-u URL_TARGET | -f FILE_TARGET) [-d] [-o OUTPUT_FILE]
 
 Check for insecure cookies on target website(s).
