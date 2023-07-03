@@ -15,11 +15,11 @@ python3 cookie_checker.py -u <target>
 ## Usage
 
 ```bash
-usage: cookie_checker.py [-h] (-u URL_TARGET | -f FILE_TARGET) [-d]
+usage: cookie_checker.py [-h] (-u URL_TARGET | -f FILE_TARGET) [-d] [-o OUTPUT_FILE]
 
 Check for insecure cookies on target website(s).
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -u URL_TARGET, --url URL_TARGET
                         Target URL.
@@ -27,4 +27,6 @@ optional arguments:
                         File path containing list of targets.
   -d, --disable-ssl-verification
                         Disable SSL certificate verification.
+  -o OUTPUT_FILE, --output OUTPUT_FILE
+                        Output file to save the results.
 ```
