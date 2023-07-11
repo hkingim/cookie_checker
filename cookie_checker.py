@@ -9,12 +9,12 @@ import re
 #    Usage: python3 cookie_check.py
 ###
 
-GRAY = '\033[0;97m'
-BLUE = '\033[94m'
-CYAN = '\033[96m'
-GREEN = '\033[92m'
-WARNING = '\033[0;93m'
-FAIL = '\033[0;91m'
+CYAN = '\033[36m'
+GRAY = '\033[0;37m'
+BLUE = '\033[34m'
+GREEN = '\033[32m'
+WARNING = '\033[0;33m'
+FAIL = '\033[0;31m'
 END = '\033[0;0m'
 
 # Display banner
@@ -47,6 +47,11 @@ def check_url(url, disable_ssl_verification, output_file):
     else:
         check_cookie(url, disable_ssl_verification, output_file)
     print(f"\n{GRAY}Done.{END}\n\n")
+# Check file extension if .txt
+def validate_file_extension(file_path):
+    valid_extensions = ['.txt']
+    extension = Path(file_path).suffix.lower()
+    return extension in valid_extensions
 # Check cookies
 def check_cookie(url, disable_ssl_verification, output_file):
     try:
@@ -146,7 +151,7 @@ def check_cookie(url, disable_ssl_verification, output_file):
                 # Print message if no cookies found
                 print(f"\n{GRAY}[*] No cookies found in {url}.{END}")
                 file.write(f"\nNo cookies found in {url}.\n")
-        file.close()
+            file.close()
         # Print link for reference
         print(f"\n{GRAY}Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies{END}\n")
         print(f"\n{GRAY}[*] Results saved to {output_file}.{END}\n")
@@ -170,7 +175,10 @@ def cookie_checker():
         if not args.output_file:
             # Create a default output file  
             output_file = "cookies_output.txt"
-            print(f"{GRAY}[*] No output file was entered. Using default output file {output_file} to save results.{END}")
+            print(f"{GRAY}[!] No output file was entered. Using default output file {output_file} to save results.{END}")
+        elif not validate_file_extension(args.output_file):
+            print(f"\n{FAIL}[!] The file must be a text file (.txt). Please try again.{END}\n")
+            return
         else:
             # Create folders if they don't exist
             output_file = Path(args.output_file).expanduser()
