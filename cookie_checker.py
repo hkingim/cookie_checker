@@ -56,8 +56,9 @@ def validate_file_extension(file_path):
 def check_cookie(url, disable_ssl_verification, output_file):
     try:
         print(f"\n{GRAY}[*] Checking for cookies...{END}")
-        response = requests.get(url, verify=not disable_ssl_verification)
-        cookies = response.cookies
+        session = requests.Session()
+        response = session.get(url, verify=not disable_ssl_verification) or requests.get(url, verify=not disable_ssl_verification)
+        cookies = session.cookies or response.cookies
         with open(output_file, 'a+') as file:
             if cookies:
                 print(f"\n{GRAY}[*] Cookies found in {url}:{END}")
