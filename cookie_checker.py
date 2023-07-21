@@ -185,14 +185,13 @@ def check_cookie(url, disable_ssl_verification, output_file_path):
                 # Print message if no insecure cookies found 
                 print(f"\n{GREEN}[+] No insecure cookies found in {url}{GREEN}.{END}")
                 output += f"\nNo insecure cookies found in {url}.\n"         
+            save_output(output, output_file_path)
+            # Print link for reference
+            print(f"\n{GRAY}[*] Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies{END}")
+            print(f"\n{GRAY}[*] Results saved to {output_file_path}.{END}\n")
         else:
             # Print message if no cookies found
             print(f"\n{GRAY}[*] No cookies found in {url}.{END}")
-            output += f"\nNo cookies found in {url}.\n"
-        save_output(output, output_file_path)
-        # Print link for reference
-        print(f"\n{GRAY}[*] Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies{END}")
-        print(f"\n{GRAY}[*] Results saved to {output_file_path}.{END}\n")
     except requests.exceptions.SSLError as e:
         print(f"\n{FAIL}[!] Error: SSL certificate verification failed. To ignore this error, disable SSL certificate verification.{END}")
         return
